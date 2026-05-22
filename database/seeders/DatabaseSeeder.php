@@ -18,6 +18,7 @@ public function run(): void
         $this->call([
             UserRoleSeeder::class,
             DeviceSeeder::class,
+            ProductCategorySeeder::class,
         ]);
     }
 }

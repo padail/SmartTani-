@@ -61,7 +61,9 @@
                     <span class="sidebar-label">Manajemen User</span>
                 </a>
 
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.products.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">▣</span>
                     <span class="sidebar-label">Manajemen Produk</span>
                 </a>
@@ -105,7 +107,9 @@
             </p>
 
             <div class="mt-2 space-y-1">
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('owner.products.index') }}"
+                    class="sidebar-link {{ request()->routeIs('owner.products.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">▣</span>
                     <span class="sidebar-label">Manajemen Produk</span>
                 </a>
@@ -140,7 +144,9 @@
             </p>
 
             <div class="mt-2 space-y-1">
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('public.products.index') }}"
+                    class="sidebar-link flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">▣</span>
                     <span class="sidebar-label">Katalog Produk</span>
                 </a>

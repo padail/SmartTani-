@@ -3,13 +3,20 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Buyer\BuyerDashboardController;
 use App\Http\Controllers\DashboardRedirectController;
+use App\Http\Controllers\Public\ProductCatalogController;
 use App\Http\Controllers\Monitoring\MonitoringDashboardController;
 use App\Http\Controllers\Owner\OwnerDashboardController;
 use App\Http\Controllers\Public\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DeviceController;
+use App\Http\Controllers\Product\ProductManagementController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/produk', [ProductCatalogController::class, 'index'])
+    ->name('public.products.index');
+
+Route::get('/produk/{product:slug}', [ProductCatalogController::class, 'show'])
+    ->name('public.products.show');
 
 Route::middleware(['auth', 'role:admin,owner'])
     ->prefix('monitoring')
@@ -17,6 +24,8 @@ Route::middleware(['auth', 'role:admin,owner'])
     ->group(function () {
         Route::get('/', [MonitoringDashboardController::class, 'index'])->name('dashboard');
         Route::get('/latest', [MonitoringDashboardController::class, 'latest'])->name('latest');
+        Route::get('/chart-data', [MonitoringDashboardController::class, 'chartData'])
+            ->name('chart-data');
     });
 Route::middleware('auth')
     ->get('/dashboard', DashboardRedirectController::class)
@@ -35,6 +44,7 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::patch('/devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus'])
             ->name('devices.toggle-status');
+        Route::resource('products', ProductManagementController::class);
     });
 
 Route::middleware(['auth', 'role:owner'])
@@ -43,6 +53,7 @@ Route::middleware(['auth', 'role:owner'])
     ->group(function () {
         Route::get('/dashboard', [OwnerDashboardController::class, 'index'])
             ->name('dashboard');
+        Route::resource('products', ProductManagementController::class);
     });
 
 Route::middleware(['auth', 'role:buyer'])
