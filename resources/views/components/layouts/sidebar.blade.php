@@ -43,6 +43,12 @@
             <span class="sidebar-label">Monitoring</span>
         </a>
         @endif
+        <a
+            href="{{ route('admin.devices.index') }}"
+            class="sidebar-link {{ request()->routeIs('admin.devices.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
+            <span class="sidebar-icon flex h-6 w-6 items-center justify-center">▧</span>
+            <span class="sidebar-label">Manajemen Device</span>
+        </a>
 
         <div class="pt-4">
             <p class="sidebar-label px-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
