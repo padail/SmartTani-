@@ -96,7 +96,49 @@
                     </div>
                 </div>
             </div>
+            <div class="grid gap-6 xl:grid-cols-2">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-950">
+                                Grafik Tren Tanah
+                            </h2>
+                            <p class="mt-1 text-sm text-slate-500">
+                                Pantau perubahan pH, kelembapan, suhu, EC, dan unsur hara tanah secara berkala.
+                            </p>
+                        </div>
 
+                        <span class="rounded-lg bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                            Realtime
+                        </span>
+                    </div>
+
+                    <div class="mt-6 h-80">
+                        <canvas id="soilTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-950">
+                                Grafik Tren Air
+                            </h2>
+                            <p class="mt-1 text-sm text-slate-500">
+                                Pantau perubahan pH, TDS, EC, dan baterai perangkat monitoring air.
+                            </p>
+                        </div>
+
+                        <span class="rounded-lg bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                            Realtime
+                        </span>
+                    </div>
+
+                    <div class="mt-6 h-80">
+                        <canvas id="waterTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
             <div class="grid gap-6 xl:grid-cols-2">
                 <div class="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
                     <div class="border-b border-slate-200 p-6">
@@ -154,6 +196,7 @@
     </section>
 
     <script>
+        const chartDataUrl = "{{ route('monitoring.chart-data') }}";
         const latestUrl = "{{ route('monitoring.latest') }}";
 
         const statusClasses = {
@@ -331,9 +374,144 @@
                 body.removeChild(body.lastElementChild);
             }
         }
+        let soilTrendChart = null;
+        let waterTrendChart = null;
+
+        function createLineChart(canvasId, labels, datasets) {
+            const canvas = document.getElementById(canvasId);
+
+            if (!canvas || !window.Chart) {
+                return null;
+            }
+
+            return new window.Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets,
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                usePointStyle: true,
+                            },
+                        },
+                        tooltip: {
+                            enabled: true,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 0,
+                                autoSkip: true,
+                            },
+                            grid: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                precision: 0,
+                            },
+                        },
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.35,
+                            borderWidth: 2,
+                        },
+                        point: {
+                            radius: 2,
+                            hoverRadius: 5,
+                        },
+                    },
+                },
+            });
+        }
+
+        function buildDataset(label, data, borderDash = []) {
+            return {
+                label,
+                data,
+                borderDash,
+                fill: false,
+            };
+        }
+
+        async function loadMonitoringCharts() {
+            try {
+                const response = await fetch(`${chartDataUrl}?limit=30`, {
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (soilTrendChart) {
+                    soilTrendChart.destroy();
+                }
+
+                if (waterTrendChart) {
+                    waterTrendChart.destroy();
+                }
+
+                soilTrendChart = createLineChart('soilTrendChart', data.soil.labels, [
+                    buildDataset('pH Tanah', data.soil.datasets.ph),
+                    buildDataset('Moisture (%)', data.soil.datasets.moisture),
+                    buildDataset('Temperature (°C)', data.soil.datasets.temperature),
+                    buildDataset('EC', data.soil.datasets.ec),
+                    buildDataset('Nitrogen', data.soil.datasets.nitrogen, [6, 4]),
+                    buildDataset('Fosfor', data.soil.datasets.phosphorus, [6, 4]),
+                    buildDataset('Kalium', data.soil.datasets.potassium, [6, 4]),
+                ]);
+
+                waterTrendChart = createLineChart('waterTrendChart', data.water.labels, [
+                    buildDataset('pH Air', data.water.datasets.ph),
+                    buildDataset('TDS', data.water.datasets.tds),
+                    buildDataset('EC', data.water.datasets.ec),
+                    buildDataset('Battery (%)', data.water.datasets.battery, [6, 4]),
+                ]);
+            } catch (error) {
+                console.error('Gagal memuat grafik monitoring:', error);
+            }
+        }
+
+        function appendChartPoint(chart, label, values, maxPoints = 30) {
+            if (!chart) {
+                return;
+            }
+
+            chart.data.labels.push(label);
+
+            chart.data.datasets.forEach((dataset, index) => {
+                dataset.data.push(values[index] ?? null);
+            });
+
+            while (chart.data.labels.length > maxPoints) {
+                chart.data.labels.shift();
+
+                chart.data.datasets.forEach((dataset) => {
+                    dataset.data.shift();
+                });
+            }
+
+            chart.update('none');
+        }
         document.addEventListener('DOMContentLoaded', () => {
             loadMonitoringData();
-
+            loadMonitoringCharts();
             if (!window.Echo) {
                 console.warn('Laravel Echo belum tersedia. Pastikan resources/js/app.js sudah dikompilasi oleh Vite.');
                 return;
@@ -358,6 +536,20 @@
                     setText('lastUpdate', soil?.recorded_at);
 
                     prependSoilHistory(soil);
+
+                    appendChartPoint(
+                        soilTrendChart,
+                        soil?.recorded_at?.substring(11, 19) ?? '-',
+                        [
+                            Number(soil?.ph ?? 0),
+                            Number(soil?.moisture ?? 0),
+                            Number(soil?.temperature ?? 0),
+                            Number(soil?.ec ?? 0),
+                            Number(soil?.nitrogen ?? 0),
+                            Number(soil?.phosphorus ?? 0),
+                            Number(soil?.potassium ?? 0),
+                        ]
+                    );
                 })
                 .listen('.water.reading.created', (event) => {
                     const water = event.reading;
@@ -374,6 +566,17 @@
                     setText('lastUpdate', water?.recorded_at);
 
                     prependWaterHistory(water);
+
+                    appendChartPoint(
+                        waterTrendChart,
+                        water?.recorded_at?.substring(11, 19) ?? '-',
+                        [
+                            Number(water?.ph ?? 0),
+                            Number(water?.tds ?? 0),
+                            Number(water?.ec ?? 0),
+                            Number(water?.battery ?? 0),
+                        ]
+                    );
                 });
         });
     </script>
