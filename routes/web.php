@@ -10,6 +10,11 @@ use App\Http\Controllers\Public\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DeviceController;
 use App\Http\Controllers\Product\ProductManagementController;
+use App\Http\Controllers\Buyer\CartController;
+use App\Http\Controllers\Buyer\CheckoutController;
+use App\Http\Controllers\Buyer\BuyerAddressController;
+use App\Http\Controllers\Buyer\BuyerOrderController;
+use App\Http\Controllers\Transaction\OrderManagementController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/produk', [ProductCatalogController::class, 'index'])
@@ -45,6 +50,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus'])
             ->name('devices.toggle-status');
         Route::resource('products', ProductManagementController::class);
+        Route::get('/orders', [OrderManagementController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderManagementController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/status', [OrderManagementController::class, 'updateStatus'])->name('orders.update-status');
     });
 
 Route::middleware(['auth', 'role:owner'])
@@ -54,14 +62,32 @@ Route::middleware(['auth', 'role:owner'])
         Route::get('/dashboard', [OwnerDashboardController::class, 'index'])
             ->name('dashboard');
         Route::resource('products', ProductManagementController::class);
+        Route::get('/orders', [OrderManagementController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderManagementController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/status', [OrderManagementController::class, 'updateStatus'])->name('orders.update-status');
     });
 
 Route::middleware(['auth', 'role:buyer'])
     ->prefix('buyer')
     ->name('buyer.')
     ->group(function () {
-        Route::get('/dashboard', [BuyerDashboardController::class, 'index'])
-            ->name('dashboard');
+        Route::get('/dashboard', [BuyerDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/products/{product}', [CartController::class, 'store'])->name('cart.items.store');
+        Route::patch('/cart/items/{cartItem}', [CartController::class, 'update'])->name('cart.items.update');
+        Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->name('cart.items.destroy');
+
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/shipping-rate', [CheckoutController::class, 'calculateShipping'])->name('checkout.shipping-rate');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+        Route::resource('addresses', BuyerAddressController::class)->except(['show']);
+        Route::patch('/addresses/{address}/default', [BuyerAddressController::class, 'makeDefault'])->name('addresses.default');
+
+        Route::get('/orders', [BuyerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [BuyerOrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/refresh-payment', [BuyerOrderController::class, 'refreshPayment'])->name('orders.refresh-payment');
     });
 
 

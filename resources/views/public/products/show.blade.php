@@ -1,7 +1,6 @@
 <x-layouts.public
     title="{{ $product->meta_title ?? $product->name . ' | Tani Monitoring' }}"
-    meta-description="{{ $product->meta_description ?? $product->short_description ?? 'Detail produk pertanian kelompok tani.' }}"
->
+    meta-description="{{ $product->meta_description ?? $product->short_description ?? 'Detail produk pertanian kelompok tani.' }}">
     <section class="bg-slate-50 py-10">
         <div class="mx-auto max-w-7xl px-6">
             <div class="mb-6">
@@ -14,15 +13,14 @@
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <div class="h-[420px] bg-slate-100">
                         @if ($product->main_image_url)
-                            <img
-                                src="{{ $product->main_image_url }}"
-                                alt="{{ $product->name }}"
-                                class="h-full w-full object-cover"
-                            >
+                        <img
+                            src="{{ $product->main_image_url }}"
+                            alt="{{ $product->name }}"
+                            class="h-full w-full object-cover">
                         @else
-                            <div class="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-400">
-                                Belum ada gambar produk
-                            </div>
+                        <div class="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-400">
+                            Belum ada gambar produk
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -73,33 +71,61 @@
 
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
                         @auth
-                            <a
-                                href="#"
-                                class="inline-flex justify-center rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
-                            >
+                        @auth
+                        @if (auth()->user()->role === 'buyer')
+                        <form
+                            method="POST"
+                            action="{{ route('buyer.cart.items.store', $product) }}"
+                            class="flex flex-col gap-3 sm:flex-row">
+                            @csrf
+
+                            <input
+                                type="number"
+                                name="quantity"
+                                min="{{ $product->minimum_order }}"
+                                max="{{ $product->stock }}"
+                                value="{{ $product->minimum_order }}"
+                                class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-700/10 sm:w-32">
+
+                            <button
+                                type="submit"
+                                class="inline-flex justify-center rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
                                 Tambah ke Keranjang
-                            </a>
+                            </button>
+                        </form>
                         @else
-                            <a
-                                href="{{ route('login') }}"
-                                class="inline-flex justify-center rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
-                            >
-                                Login untuk Membeli
-                            </a>
+                        <a
+                            href="{{ route('dashboard') }}"
+                            class="inline-flex justify-center rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
+                            Masuk Dashboard
+                        </a>
+                        @endif
+                        @else
+                        <a
+                            href="{{ route('login') }}"
+                            class="inline-flex justify-center rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
+                            Login untuk Membeli
+                        </a>
+                        @endauth
+                        @else
+                        <a
+                            href="{{ route('login') }}"
+                            class="inline-flex justify-center rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
+                            Login untuk Membeli
+                        </a>
                         @endauth
 
                         <a
                             href="https://wa.me/?text={{ urlencode('Halo, saya ingin bertanya tentang produk ' . $product->name) }}"
                             target="_blank"
-                            class="inline-flex justify-center rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                        >
+                            class="inline-flex justify-center rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                             Tanya via WhatsApp
                         </a>
                     </div>
 
-                    <p class="mt-4 text-xs leading-5 text-slate-500">
+                    <!-- <p class="mt-4 text-xs leading-5 text-slate-500">
                         Fitur keranjang dan checkout akan diaktifkan pada tahap berikutnya.
-                    </p>
+                    </p> -->
                 </div>
             </div>
 
@@ -114,43 +140,42 @@
             </div>
 
             @if ($relatedProducts->isNotEmpty())
-                <div class="mt-10">
-                    <h2 class="text-2xl font-bold text-slate-950">
-                        Produk Terkait
-                    </h2>
+            <div class="mt-10">
+                <h2 class="text-2xl font-bold text-slate-950">
+                    Produk Terkait
+                </h2>
 
-                    <div class="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        @foreach ($relatedProducts as $related)
-                            <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                                <a href="{{ route('public.products.show', $related) }}" class="block">
-                                    <div class="h-44 bg-slate-100">
-                                        @if ($related->main_image_url)
-                                            <img
-                                                src="{{ $related->main_image_url }}"
-                                                alt="{{ $related->name }}"
-                                                class="h-full w-full object-cover"
-                                                loading="lazy"
-                                            >
-                                        @else
-                                            <div class="flex h-full w-full items-center justify-center text-xs font-semibold text-slate-400">
-                                                Belum ada gambar
-                                            </div>
-                                        @endif
-                                    </div>
+                <div class="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach ($relatedProducts as $related)
+                    <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                        <a href="{{ route('public.products.show', $related) }}" class="block">
+                            <div class="h-44 bg-slate-100">
+                                @if ($related->main_image_url)
+                                <img
+                                    src="{{ $related->main_image_url }}"
+                                    alt="{{ $related->name }}"
+                                    class="h-full w-full object-cover"
+                                    loading="lazy">
+                                @else
+                                <div class="flex h-full w-full items-center justify-center text-xs font-semibold text-slate-400">
+                                    Belum ada gambar
+                                </div>
+                                @endif
+                            </div>
 
-                                    <div class="p-4">
-                                        <p class="line-clamp-2 text-sm font-bold text-slate-950">
-                                            {{ $related->name }}
-                                        </p>
-                                        <p class="mt-2 text-sm font-bold text-green-700">
-                                            Rp{{ number_format((float) $related->price, 0, ',', '.') }}
-                                        </p>
-                                    </div>
-                                </a>
-                            </article>
-                        @endforeach
-                    </div>
+                            <div class="p-4">
+                                <p class="line-clamp-2 text-sm font-bold text-slate-950">
+                                    {{ $related->name }}
+                                </p>
+                                <p class="mt-2 text-sm font-bold text-green-700">
+                                    Rp{{ number_format((float) $related->price, 0, ',', '.') }}
+                                </p>
+                            </div>
+                        </a>
+                    </article>
+                    @endforeach
                 </div>
+            </div>
             @endif
         </div>
     </section>

@@ -34,6 +34,7 @@ class StoreProductRequest extends FormRequest
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'unit' => ['required', 'string', 'max:30'],
+            'weight_gram' => ['required', 'integer', 'min:1'],
             'minimum_order' => ['required', 'integer', 'min:1'],
             'harvest_date' => ['nullable', 'date'],
             'main_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

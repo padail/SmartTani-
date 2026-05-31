@@ -20,6 +20,7 @@ class Product extends Model
         'price',
         'stock',
         'unit',
+        'weight_gram',
         'minimum_order',
         'harvest_date',
         'main_image',
@@ -34,6 +35,7 @@ class Product extends Model
         return [
             'price' => 'decimal:2',
             'stock' => 'integer',
+            'weight_gram' => 'integer',
             'minimum_order' => 'integer',
             'harvest_date' => 'date',
             'is_featured' => 'boolean',

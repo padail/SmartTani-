@@ -245,6 +245,25 @@ $product = $product ?? null;
                     <p class="mt-2 text-sm font-medium text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <div>
+                    <label for="weight_gram" class="mb-2 block text-sm font-semibold text-slate-700">
+                        Berat Produk
+                    </label>
+                    <input
+                        id="weight_gram"
+                        name="weight_gram"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value="{{ old('weight_gram', $product?->weight_gram ?? 1000) }}"
+                        placeholder="1000"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-700/10"
+                        required>
+                    <p class="mt-1 text-xs text-slate-500">Satuan gram. Contoh: 1000 = 1 kg.</p>
+                    @error('weight_gram')
+                    <p class="mt-2 text-sm font-medium text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
         </div>
 

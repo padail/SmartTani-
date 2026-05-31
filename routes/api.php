@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\IoT\SoilReadingApiController;
 use App\Http\Controllers\Api\IoT\WaterReadingApiController;
+use App\Http\Controllers\Payment\MidtransNotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/iot')
@@ -13,3 +14,5 @@ Route::prefix('v1/iot')
         Route::post('/water-readings', [WaterReadingApiController::class, 'store'])
             ->name('api.iot.water-readings.store');
     });
+Route::post('/v1/payments/midtrans/notification', MidtransNotificationController::class)
+    ->name('api.payments.midtrans.notification');

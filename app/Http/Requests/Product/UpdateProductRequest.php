@@ -28,6 +28,7 @@ class UpdateProductRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
+            'weight_gram' => ['required', 'integer', 'min:1'],
             'unit' => ['required', 'string', 'max:30'],
             'minimum_order' => ['required', 'integer', 'min:1'],
             'harvest_date' => ['nullable', 'date'],

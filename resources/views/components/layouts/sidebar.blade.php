@@ -68,9 +68,11 @@
                     <span class="sidebar-label">Manajemen Produk</span>
                 </a>
 
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">↔</span>
-                    <span class="sidebar-label">Transaksi</span>
+                    <span class="sidebar-label">Manajemen Transaksi</span>
                 </a>
 
                 <a href="#" class="sidebar-link flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-400">
@@ -114,7 +116,9 @@
                     <span class="sidebar-label">Manajemen Produk</span>
                 </a>
 
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('owner.orders.index') }}"
+                    class="sidebar-link {{ request()->routeIs('owner.orders.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">▤</span>
                     <span class="sidebar-label">Kelola Pesanan</span>
                 </a>
@@ -151,14 +155,25 @@
                     <span class="sidebar-label">Katalog Produk</span>
                 </a>
 
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('buyer.cart.index') }}"
+                    class="sidebar-link {{ request()->routeIs('buyer.cart.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">◫</span>
                     <span class="sidebar-label">Keranjang</span>
                 </a>
 
-                <a href="#" class="sidebar-link flex items-center gap-3 rounded px-4 py-3 text-sm font-semibold text-slate-400">
+                <a
+                    href="{{ route('buyer.orders.index') }}"
+                    class="sidebar-link {{ request()->routeIs('buyer.orders.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
                     <span class="sidebar-icon flex h-6 w-6 items-center justify-center">⇄</span>
                     <span class="sidebar-label">Tracking Pesanan</span>
+                </a>
+
+                <a
+                    href="{{ route('buyer.addresses.index') }}"
+                    class="sidebar-link {{ request()->routeIs('buyer.addresses.*') ? 'bg-green-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }} flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition">
+                    <span class="sidebar-icon flex h-6 w-6 items-center justify-center">⌂</span>
+                    <span class="sidebar-label">Alamat Saya</span>
                 </a>
 
                 <a href="#" class="sidebar-link flex items-center gap-3 rounded px-4 py-3 text-sm font-semibold text-slate-400">
